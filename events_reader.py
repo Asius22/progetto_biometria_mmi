@@ -12,7 +12,7 @@ event_mapping = {'IMAGE': 1, 'COGNITIVE': 5, 'SSVEPC': 201, 'SSVEP': 211, 'REST'
 # funzione di normalizzazione dei file *.mat
 
 
-def normalizaParsed():
+def normalizeParsed():
     n_pers = 21
     n_esp = 3
     for i in range(1, n_pers + 1):  # apri tutti i file
@@ -47,13 +47,13 @@ def normalizaParsed():
 
 
 def read_event(path):
+    print(f"-----------{path}----------")
     events = scipy.loadmat(path)['events']
     event_start = events[0][0][0][0]
     for event in events:
         # event = events[i]
         # 2 0 0 0 0
         event_type = event[2][0][0][0][0]
-        print(event_type)
 
         # la prima colonna contiene l'inizio dell'evento
         first_column = event[0][0][0] - event_start
@@ -69,4 +69,4 @@ def read_event(path):
     return event_mapping, np.asarray(event_array)
 
 
-# read_event("RAW_PARSED/s3_s2.mat")
+#read_event("RAW_PARSED/s3_s2.mat")

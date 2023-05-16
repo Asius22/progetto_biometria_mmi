@@ -27,12 +27,12 @@ for i in range(1, nPart + 1):
         ica = mne.preprocessing.ICA(n_components=ica_n_components, random_state=random_state)
         path = f'{DIRECTORY_NAME}/s{i}_s{j}.mat'
         # load the .mat file
-        mat = scipy.loadmat(f"{DIRECTORY_NAME}/s2_s1.mat")
+        mat = scipy.loadmat(path)
         # fetch recording data
         raw_input = mat['recording']
         # carica eventi
         events = mat['events']
-        event_mapping, event_array = read_event(f"{DIRECTORY_NAME}/s2_s1.mat")
+        event_mapping, event_array = read_event(path)
 
         # create the raw array with correct metadata
         raw = mne.io.RawArray(list(map(lambda x: x /1000000, raw_input.transpose())), info)
@@ -45,14 +45,20 @@ for i in range(1, nPart + 1):
         raw_filtered = raw.copy().filter(low_cut_freq, high_cut_freq, "all")
         # raw_filtered.compute_psd(fmax=100).plot()
         # plot post filtering
-        # raw_filtered.plot(title="filtered", duration=60, order=eeg_channels, n_channels=len(eeg_channels), scalings='auto')
+        raw_filtered.plot(title="filtered", duration=5, start=15, order=eeg_channels, n_channels=len(eeg_channels), scalings='auto')
         # create epochs with recording and events properly preprocessed
         epochs_ica = mne.Epochs(raw_filtered, event_array, event_id=event_mapping, tmin=0, tmax=tstep, baseline=None, preload=True, event_repeated='merge')
         reject = get_rejection_threshold(epochs_ica)
+        # fit data to epochs
         ica.fit(epochs_ica, reject=reject, tstep=tstep)
+        # remove selected artifact
         epochs_post_ica = ica.apply(epochs_ica.copy())
+
         # epochs_post_ica.plot()
+        # ica.plot_components()
+        # ica.plot_properties(epochs_ica, picks=range(0, ica.n_components_), psd_args={'fmax': high_cut_freq});
+
+        # save epochs
+        epochs_post_ica.save(f"./EPOCHS/s{i}_s{j}-epo.fif", overwrite=True)
+        # save ica dates
         ica.save(f"./ICA/s{i}_s{j}-ica.fif", overwrite=True)
-        print(f"j----------------------------------{j}")
-    print(f"i----------------------------------{i}")
-exit()
