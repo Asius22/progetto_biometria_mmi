@@ -1,7 +1,6 @@
 import scipy.io as scipy
 import numpy as np
 
-event_array = []
 """
     # ciclo per creare l'event:dict
     # deve contenere la label dell'evento e l'id dell'evento
@@ -47,6 +46,8 @@ def normalizeParsed():
 
 
 def read_event(path):
+    event_array = []
+
     print(f"-----------{path}----------")
     events = scipy.loadmat(path)['events']
     event_start = events[0][0][0][0]
@@ -64,7 +65,6 @@ def read_event(path):
         array = np.array([first_column, second_column, third_column], dtype=np.int64)
         event_array.append(array)
 
-    # TODO: sort event_array
     event_array.sort(key=lambda x: x[0])
     return event_mapping, np.asarray(event_array)
 

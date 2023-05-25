@@ -30,4 +30,4 @@ for i in range(1, nSub + 1):  # tutti i soggetti da 1 a nSub compreso
         flat_array = mfcc_normalized.reshape(mfcc_normalized.shape[0], -1)  # (n_samples, num_frames * num_coefficients)
         print(flat_array.shape)
         #np.savetxt(f"FEATURES/s{i}_s{j}.csv", flat_array, delimiter=",")  # salva il file
-        flat_array = []
+
