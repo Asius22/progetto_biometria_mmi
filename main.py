@@ -13,7 +13,7 @@ high_cut_freq = 45
 tstep = 5.0
 # ICA properties
 random_state = 42
-ica_n_components = 14 # ica must mantain 99% of data
+ica_n_components = 14  # ica must mantain 99% of data
 # .mat file directory name
 DIRECTORY_NAME = "RAW_PARSED"
 cols = ["COUNTER", "INTERPOLATED", "F3", "FC5", "AF3", "F7", "T7", "P7", "O1", "O2", "P8", "T8", "F8", "AF4", "FC6",
