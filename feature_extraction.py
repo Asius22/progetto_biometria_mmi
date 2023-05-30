@@ -1,34 +1,27 @@
 import os
-
+import matplotlib.pyplot as plt
 import mne
 import librosa
+from librosa import feature
 import numpy as np
 
-nSub = 21  # numero di soggetti da campionare
-nEsp = 3  # numero di sedute da campionare per ogni soggetto
-event_mapping = ['IMAGE', 'COGNITIVE', 'SSVEPC', 'SSVEP', 'REST', 'EYES']
-
-roi = ["F3", "FC5", "AF3", "F7", "T7", "P7", "O1", "O2", "P8", "T8", "F8", "AF4", "FC6",
-       "F4"]  # nomi dei sensori(potrebbero funzionare)
+nSub = 1  # numero di soggetti da campionare
+nEsp = 1  # numero di sedute da campionare per ogni soggetto
 
 for i in range(1, nSub + 1):  # tutti i soggetti da 1 a nSub compreso
-    os.mkdir(f"FEATURES/s_{i}")
+    # os.mkdir(f"FEATURES_2/s{i}")
     for j in range(1, nEsp + 1):  # tutte le sedute da 1 a nEsp compreso
         epochs = mne.read_epochs(f"EPOCHS/s{i}_s{j}-epo.fif", preload=True)  # carica le epoche
+        epochs.drop_channels(['COUNTER', 'INTERPOLATED', '...UNUSED DATA...'])  # droppa bad channels
+        # restituisce un numpy array 3D che contiene n_epochs, n_channels, n_timepoints/n_samples
+        epochs_data = epochs.get_data()
 
-        epochs_data = epochs.get_data()  # restituisce un numpy array 3D che contiene n_epochs, n_channels, n_timepoints
+        fft = np.fft.fft(epochs_data)  # applico la trasformata di fourier
+        fft = np.concatenate(fft, axis=1)  # concatena i dati lasciando inalterati i canali
+        audio_signal = fft.astype(float)  # parse float
+        mfcc = librosa.feature.mfcc(y=audio_signal, sr=epochs.info['sfreq'])  # calcola mfcc
+        mfcc_scaled = np.mean(mfcc.T, axis=0)  # calcola la media sulla trasposta
 
-        # applico la trasformata di Fourier per passare il dato nel dominio delle frequenze
-        fft_data = np.fft.fft(epochs_data, axis=2)
+        # salva il file
+        np.save(f"FEATURES_2/s{i}/s{i}_s{j}.npy", mfcc_scaled) # salva la shape (17.20.166)
 
-        audio_signal = np.concatenate(fft_data, axis=1)  # concatena tutti i canali
-
-        audio_signal = np.abs(audio_signal).astype(float)  # converti il segnale da complex a float
-
-        mfcc = librosa.feature.mfcc(y=audio_signal)  # passa il segnale normalizzato per estrarre le mfcc
-        # normalizzo il dato attraverso la deviazione principale e standard
-        mfcc_mean = np.mean(mfcc, axis=1)  # calcolo gli indici sull'asse del tempo
-        mfcc_normalized = (mfcc - np.mean(mfcc, axis=0)) / np.std(mfcc, axis=0)
-
-        flat_array = mfcc_normalized.reshape(mfcc_normalized.shape[0], -1)  # (n_samples, num_frames * num_coefficients)
-        np.savetxt(f"FEATURES/s_{i}/s{i}_s{j}.csv", flat_array, delimiter=",", )  # salva il file

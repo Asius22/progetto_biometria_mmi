@@ -23,6 +23,7 @@ info = mne.create_info(cols, 256, ch_types='eeg')
 ten_twenty_montage = mne.channels.make_standard_montage("standard_1020")
 
 for i in range(1, nPart + 1):
+
     for j in range(1, nEsp + 1):
         ica = mne.preprocessing.ICA(n_components=ica_n_components, random_state=random_state)
         path = f'{DIRECTORY_NAME}/s{i}_s{j}.mat'
@@ -35,9 +36,9 @@ for i in range(1, nPart + 1):
         event_mapping, event_array = read_event(path)
 
         # create the raw array with correct metadata
-        raw = mne.io.RawArray(list(map(lambda x: x /1000000, raw_input.transpose())), info)
+        raw = mne.io.RawArray(list(map(lambda x: x / 1000000, raw_input.transpose())), info)
         raw.info["bads"] += ["COUNTER", "INTERPOLATED", "...UNUSED DATA..."]
-        raw.set_montage(ten_twenty_montage,  on_missing="ignore")
+        raw.set_montage(ten_twenty_montage, on_missing="ignore")
         eeg_channels = mne.pick_types(raw.info, eeg=True)
         # plot pre filtering
         # raw.plot(title="Raw Array", start=15, duration=5, order=eeg_channels, n_channels=len(eeg_channels), scalings='auto')
@@ -47,7 +48,8 @@ for i in range(1, nPart + 1):
         # plot post filtering
         # raw_filtered.plot(title="filtered", duration=5, start=15, order=eeg_channels, n_channels=len(eeg_channels), scalings='auto')
         # create epochs with recording and events properly preprocessed
-        epochs_ica = mne.Epochs(raw_filtered, event_array, event_id=event_mapping, tmin=0, tmax=tstep, baseline=None, preload=True, event_repeated='merge')
+        epochs_ica = mne.Epochs(raw_filtered, event_array, event_id=event_mapping, tmin=0, tmax=tstep, baseline=None,
+                                preload=True, event_repeated='merge')
         reject = get_rejection_threshold(epochs_ica)
         # fit data to epochs
         ica.fit(epochs_ica, reject=reject, tstep=tstep)

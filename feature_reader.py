@@ -1,7 +1,7 @@
 import numpy as np
-import pandas
+import matplotlib.pyplot as pl
+import shutil as os
 
 for i in range(1, 22):
-    for j in range(1, 4):
-        file = pandas.read_csv(f"FEATURES/s{i}_s{j}.csv", sep=",")
-        print(file.shape)
+    print(np.load(f"FEATURES_2/s{i}/s{i}_s1.npy").shape)
+
