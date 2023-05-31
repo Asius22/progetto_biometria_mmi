@@ -26,12 +26,9 @@ for i in range(1, nPart + 1):
 
     for j in range(1, nEsp + 1):
         ica = mne.preprocessing.ICA(n_components=ica_n_components, random_state=random_state)
-        path = f'{DIRECTORY_NAME}/s{i}_s{j}.mat'
-        # load the .mat file
-        mat = scipy.loadmat(path)
-        # fetch recording data
-        raw_input = mat['recording']
-        # carica eventi
+        path = f'{DIRECTORY_NAME}/s{i}_s{j}.mat'        # load the .mat file
+        mat = scipy.loadmat(path)        # fetch recording data
+        raw_input = mat['recording']        # carica eventi
         events = mat['events']
         event_mapping, event_array = read_event(path)
 
