@@ -28,18 +28,21 @@ scaler = sklearn.preprocessing.StandardScaler()
 X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
 
+print(X_train)
+print(X_train.shape)
 rf = RandomForestClassifier()
 rf.fit(X_train, y_train)
 y_pred = rf.predict(X_test)
 accuracy = accuracy_score(y_test, y_pred)
 print("Accuracy:", accuracy)
+"""
 
 precision = precision_score(y_test, y_pred, average='weighted')
 print("Precision:", precision)
 
 recall = recall_score(y_test, y_pred,average='macro')
 print("Recall:", recall)
-
+"""
 # Create the confusion matrix
 cm = confusion_matrix(y_test, y_pred)
 
