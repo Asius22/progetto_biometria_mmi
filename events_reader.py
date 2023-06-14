@@ -8,9 +8,9 @@ import numpy as np
 """
 event_mapping = {'IMAGE': 1, 'COGNITIVE': 5, 'SSVEPC': 201, 'SSVEP': 211, 'REST': 3, 'EYES': 111}
 
-# funzione di normalizzazione dei file *.mat
-
-
+"""
+    funzione creata per mettere le informazioni utili tutte nella stessa posizione
+"""
 def normalizeParsed():
     n_pers = 21
     n_esp = 3
@@ -39,8 +39,6 @@ def normalizeParsed():
                     except IndexError:
                         print(f"----------------{event}")
 
-                    #print("-----" + event[2][0][0][0][0])
-
             if save_mat:
                 scipy.savemat(f"RAW_PARSED/s{i}_s{j}.mat", mdict=mat)
 
@@ -50,23 +48,17 @@ def read_event(path):
 
     print(f"-----------{path}----------")
     events = scipy.loadmat(path)['events']
-    event_start = events[0][0][0][0]
+    event_start = events[0][0][0][0]  # tempo di inizio dell'esperimento
     for event in events:
-        # event = events[i]
-        # 2 0 0 0 0
+        # il tipo di evento, post normalizzazione, si trova in posizione 2-> 0-> 0-> 0-> 0
         event_type = event[2][0][0][0][0]
 
-        # la prima colonna contiene l'inizio dell'evento
-        first_column = event[0][0][0] - event_start
-        # la seconda colonna contiene la fine dell'evento
-        second_column = event[1][0][0] - event_start
+        first_column = event[0][0][0] - event_start  # inizio evento
+        second_column = event[1][0][0] - event_start  # fine evento
         # la terza colonna contiene il tipo di evento che si è presentato
-        third_column = event_mapping[event_type]
+        third_column = event_mapping[event_type] # tipo evento (image, cognitive ecc... 9
         array = np.array([first_column, second_column, third_column], dtype=np.int64)
         event_array.append(array)
 
-    event_array.sort(key=lambda x: x[0])
+    event_array.sort(key=lambda x: x[0])  # ordina gli eventi in base al tempo di inizio
     return event_mapping, np.asarray(event_array)
-
-
-#read_event("RAW_PARSED/s3_s2.mat")
